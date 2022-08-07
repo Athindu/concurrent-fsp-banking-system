@@ -1,0 +1,36 @@
+//Author: Athindu Umayanga
+//ID: 2018580 / w1742249
+
+
+//Maximum and minimum amount that can be used on a transaction
+const MIN_DEPOSIT_WITHDRAW = 2
+const MAX_DEPOSIT_WITHDRAW = 3
+
+range TRANSACTION = MIN_DEPOSIT_WITHDRAW..MAX_DEPOSIT_WITHDRAW
+
+//Current balance and the maxium and minimum value account can hold
+range CURRENT_BALANCE = 4..4
+range NEW_BALANCE = 1..7
+
+set ACTOR_LABELS = {student,grandma,loan,uni}
+
+BANK_ACCOUNT = ( readB[currentBalance:CURRENT_BALANCE ] -> calculateB[newB:NEW_BALANCE] -> updateB[newB] -> BANK_ACCOUNT ).           
+
+STUDENT = ( readB[currentBalance:CURRENT_BALANCE ] -> WITHDRAWAL[currentBalance]),
+			WITHDRAWAL[currentBalance:CURRENT_BALANCE] = (substractB[money:TRANSACTION] -> CALCULATE[currentBalance-money]),
+			CALCULATE[newB:NEW_BALANCE] = (calculateB[newB] -> buyPhone -> updateB[newB] -> STUDENT ).
+
+GRANDMA = ( readB[currentBalance:CURRENT_BALANCE ] -> DEPOSIT[currentBalance]),
+			DEPOSIT[currentBalance:CURRENT_BALANCE] = (addB[money:TRANSACTION] -> CALCULATE[currentBalance+money]),
+			CALCULATE[newB:NEW_BALANCE] = (calculateB[newB] -> updateB[newB] -> sendBCard -> GRANDMA ).
+
+LOAN_COMPANY = ( readB[currentBalance:CURRENT_BALANCE ] -> DEPOSIT[currentBalance]),
+				DEPOSIT[currentBalance:CURRENT_BALANCE] = (addB[money:TRANSACTION] -> CALCULATE[currentBalance+money]),
+				CALCULATE[newB:NEW_BALANCE] = (calculateB[newB] -> updateB[newB] -> LOAN_COMPANY ).
+
+UNIVERSITY = ( readB[currentBalance:CURRENT_BALANCE ] -> WITHDRAWAL[currentBalance]),		
+				WITHDRAWAL[currentBalance:CURRENT_BALANCE] = (substractB[money:TRANSACTION] -> CALCULATE[currentBalance-money]),
+				CALCULATE[newB:NEW_BALANCE] = (calculateB[newB] -> updateB[newB] -> UNIVERSITY ).				
+
+
+|| BANKING_SYSTEM = ( student:STUDENT || grandma:GRANDMA || loan:LOAN_COMPANY || uni:UNIVERSITY || {ACTOR_LABELS}:: BANK_ACCOUNT ).
